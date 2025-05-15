@@ -7,6 +7,10 @@ import edu.ucsb.cs156.courses.documents.ConvertedSection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,31 +20,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(&quot;/api/public/courseovertime&quot;)
-<span class="fc" id="L19">public class CourseOverTimeBuildingController {</span>
+<span class="fc" id="L23">public class CourseOverTimeBuildingController {</span>
 
-<span class="fc" id="L21">  private ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L25">  private ObjectMapper mapper = new ObjectMapper();</span>
 
   @Autowired ConvertedSectionCollection convertedSectionCollection;
 
-  @Operation(summary = &quot;Get a list of courses over time, filtered by (abbreviated) building code&quot;)
-  @GetMapping(value = &quot;/buildingsearch&quot;, produces = &quot;application/json&quot;)
+  @Operation(
+      summary =
+          &quot;Get a list of classroom numbers within a particular building, given a quarter and building code&quot;)
+  @GetMapping(value = &quot;/buildingsearch/classroom&quot;, produces = &quot;application/json&quot;)
   public ResponseEntity&lt;String&gt; search(
       @Parameter(
-              name = &quot;startQtr&quot;,
+              name = &quot;quarter&quot;,
               description =
-                  &quot;Starting quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+                  &quot;Quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
               example = &quot;20231&quot;,
               required = true)
           @RequestParam
-          String startQtr,
-      @Parameter(
-              name = &quot;endQtr&quot;,
-              description =
-                  &quot;Ending quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
-              example = &quot;20231&quot;,
-              required = true)
-          @RequestParam
-          String endQtr,
+          String quarter,
       @Parameter(
               name = &quot;buildingCode&quot;,
               description = &quot;Building code such as PHELP for Phelps, GIRV for Girvetz&quot;,
@@ -49,11 +47,29 @@ import org.springframework.web.bind.annotation.RestController;
           @RequestParam
           String buildingCode)
       throws JsonProcessingException {
-<span class="fc" id="L52">    List&lt;ConvertedSection&gt; courseResults =</span>
-<span class="fc" id="L53">        convertedSectionCollection.findByQuarterRangeAndBuildingCode(</span>
-            startQtr, endQtr, buildingCode);
-<span class="fc" id="L55">    String body = mapper.writeValueAsString(courseResults);</span>
-<span class="fc" id="L56">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L50">    List&lt;ConvertedSection&gt; courseResults =</span>
+<span class="fc" id="L51">        convertedSectionCollection.findByQuarterAndBuildingCode(quarter, buildingCode);</span>
+
+<span class="fc" id="L53">    Set&lt;String&gt; classrooms =</span>
+<span class="fc" id="L54">        courseResults.stream()</span>
+<span class="fc" id="L55">            .flatMap(</span>
+                result -&gt; {
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">                  if (result.getSection() != null</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                      &amp;&amp; result.getSection().getTimeLocations() != null) {</span>
+<span class="fc" id="L59">                    return result.getSection().getTimeLocations().stream();</span>
+                  } else {
+<span class="nc" id="L61">                    return Stream.empty();</span>
+                  }
+                })
+<span class="fc" id="L64">            .filter(</span>
+                loc -&gt;
+<span class="pc bpc" id="L66" title="2 of 4 branches missed.">                    loc.getBuilding() != null &amp;&amp; loc.getBuilding().equalsIgnoreCase(buildingCode))</span>
+<span class="fc" id="L67">            .map(loc -&gt; loc.getRoom())</span>
+<span class="pc bpc" id="L68" title="2 of 4 branches missed.">            .filter(room -&gt; room != null &amp;&amp; !room.isEmpty())</span>
+<span class="fc" id="L69">            .collect(Collectors.toCollection(TreeSet::new));</span>
+
+<span class="fc" id="L71">    String body = mapper.writeValueAsString(classrooms);</span>
+<span class="fc" id="L72">    return ResponseEntity.ok().body(body);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
