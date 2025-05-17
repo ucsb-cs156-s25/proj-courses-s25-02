@@ -250,7 +250,11 @@
 <a name='L185'></a><a href='#L185'>185</a>
 <a name='L186'></a><a href='#L186'>186</a>
 <a name='L187'></a><a href='#L187'>187</a>
-<a name='L188'></a><a href='#L188'>188</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -305,18 +309,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">42x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -326,12 +328,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">35x</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">84x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -348,7 +350,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">144x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">192x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -363,13 +368,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">42x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">966x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1288x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -452,6 +460,7 @@ const daysOfWeek = [
 ];
 &nbsp;
 const hours = [
+  // Stryker disable next-line all
   "",
   "1 AM",
   "2 AM",
@@ -486,12 +495,13 @@ const hours = [
 //     endTime: "4:00PM"
 // }
 &nbsp;
-// Stryker disable next-line all : no need to test default colors
+// Stryker disable all : no need to test default colors
 export default function SchedulerPanel({
   Events = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
   eventColor = "#d1ecf188",
   borderColor = "#bee5eb",
 }) {
+  // Stryker restore all
   const testId = "SchedulerPanel";
 &nbsp;
   return (
@@ -528,15 +538,15 @@ export default function SchedulerPanel({
       &lt;Row&gt;
         &lt;Col style={styles.timeColumn}&gt;
           {
-            /* Stryker disable next-line all : no test needed for styling */
             &lt;div
+              /* Stryker disable next-line all : no test needed for styling */
               style={{ ...styles.timeSlot, height: "30px", border: "0" }}
             &gt;&lt;/div&gt;
           }
           {hours.map((hour, index) =&gt; (
-            /* Stryker disable next-line all : no test needed for styling */
             &lt;div
               key={index}
+              /* Stryker disable next-line all : no test needed for styling */
               style={{ ...styles.timeSlot, border: "0" }}
               data-testid={`${testId}-${hour.replace(" ", "-")}-title`}
             &gt;
@@ -549,23 +559,25 @@ export default function SchedulerPanel({
             &lt;/div&gt;
           ))}
         &lt;/Col&gt;
-        {daysOfWeek.map((day) =&gt; (
-          &lt;Col key={day} style={styles.dayColumn}&gt;
-            {
-              /* Stryker disable next-line all : no test needed for styling */
-              &lt;div style={{ ...styles.timeSlot, height: "30px" }}&gt;&lt;/div&gt;
-            }
-            {hours.slice(0, hours.length - 1).map((hour) =&gt; (
-              &lt;div
-                key={hour}
-                style={styles.timeSlot}
-                data-testid={`${testId}-base-slot`}
-              &gt;
-                &lt;Card style={styles.eventCard} /&gt;
-              &lt;/div&gt;
-            ))}
-          &lt;/Col&gt;
-        ))}
+&nbsp;
+        {
+          // Stryker disable all : no test needed for styling
+          daysOfWeek.map((day) =&gt; (
+            &lt;Col key={day} style={styles.dayColumn}&gt;
+              {&lt;div style={{ ...styles.timeSlot, height: "30px" }}&gt;&lt;/div&gt;}
+              {hours.slice(0, hours.length - 1).map((hour) =&gt; (
+                &lt;div
+                  key={hour}
+                  style={styles.timeSlot}
+                  data-testid={`${testId}-base-slot`}
+                &gt;
+                  &lt;Card style={styles.eventCard} /&gt;
+                &lt;/div&gt;
+                // Stryker restore all
+              ))}
+            &lt;/Col&gt;
+          ))
+        }
       &lt;/Row&gt;
     &lt;/Container&gt;
   );
@@ -631,7 +643,7 @@ const styles = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-17T05:48:10.849Z
+                at 2025-05-17T08:14:53.489Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
