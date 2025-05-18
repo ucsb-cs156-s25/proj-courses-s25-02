@@ -34,8 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
       @Parameter(
               name = &quot;quarter&quot;,
               description =
-                  &quot;Quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
-              example = &quot;20231&quot;,
+                  &quot;Quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
               required = true)
           @RequestParam
           String quarter,
