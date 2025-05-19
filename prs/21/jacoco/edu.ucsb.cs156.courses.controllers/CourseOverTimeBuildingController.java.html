@@ -26,11 +26,48 @@ import org.springframework.web.bind.annotation.RestController;
 
   @Autowired ConvertedSectionCollection convertedSectionCollection;
 
+  // old
+  @Operation(summary = &quot;Get a list of courses over time, filtered by (abbreviated) building code&quot;)
+  @GetMapping(value = &quot;/buildingsearch&quot;, produces = &quot;application/json&quot;)
+  public ResponseEntity&lt;String&gt; search(
+      @Parameter(
+              name = &quot;startQtr&quot;,
+              description =
+                  &quot;Starting quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
+              required = true)
+          @RequestParam
+          String startQtr,
+      @Parameter(
+              name = &quot;endQtr&quot;,
+              description =
+                  &quot;Ending quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
+              required = true)
+          @RequestParam
+          String endQtr,
+      @Parameter(
+              name = &quot;buildingCode&quot;,
+              description = &quot;Building code such as PHELP for Phelps, GIRV for Girvetz&quot;,
+              example = &quot;GIRV&quot;,
+              required = true)
+          @RequestParam
+          String buildingCode)
+      throws JsonProcessingException {
+<span class="fc" id="L57">    List&lt;ConvertedSection&gt; courseResults =</span>
+<span class="fc" id="L58">        convertedSectionCollection.findByQuarterRangeAndBuildingCode(</span>
+            startQtr, endQtr, buildingCode);
+<span class="fc" id="L60">    String body = mapper.writeValueAsString(courseResults);</span>
+
+<span class="fc" id="L62">    return ResponseEntity.ok().body(body);</span>
+  }
+
+  // new
   @Operation(
       summary =
           &quot;Get a list of classroom numbers within a particular building, given a quarter and building code&quot;)
-  @GetMapping(value = &quot;/buildingsearch/classroom&quot;, produces = &quot;application/json&quot;)
-  public ResponseEntity&lt;String&gt; search(
+  @GetMapping(value = &quot;/buildingsearch/classrooms&quot;, produces = &quot;application/json&quot;)
+  public ResponseEntity&lt;String&gt; searchNew(
       @Parameter(
               name = &quot;quarter&quot;,
               description =
@@ -47,29 +84,29 @@ import org.springframework.web.bind.annotation.RestController;
           @RequestParam
           String buildingCode)
       throws JsonProcessingException {
-<span class="fc" id="L50">    List&lt;ConvertedSection&gt; courseResults =</span>
-<span class="fc" id="L51">        convertedSectionCollection.findByQuarterAndBuildingCode(quarter, buildingCode);</span>
+<span class="fc" id="L87">    List&lt;ConvertedSection&gt; courseResults =</span>
+<span class="fc" id="L88">        convertedSectionCollection.findByQuarterAndBuildingCode(quarter, buildingCode);</span>
 
-<span class="fc" id="L53">    Set&lt;String&gt; classrooms =</span>
-<span class="fc" id="L54">        courseResults.stream()</span>
-<span class="fc" id="L55">            .flatMap(</span>
+<span class="fc" id="L90">    Set&lt;String&gt; classrooms =</span>
+<span class="fc" id="L91">        courseResults.stream()</span>
+<span class="fc" id="L92">            .flatMap(</span>
                 result -&gt; {
-<span class="fc bfc" id="L57" title="All 2 branches covered.">                  if (result.getSection() != null</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">                      &amp;&amp; result.getSection().getTimeLocations() != null) {</span>
-<span class="fc" id="L59">                    return result.getSection().getTimeLocations().stream();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                  if (result.getSection() != null</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                      &amp;&amp; result.getSection().getTimeLocations() != null) {</span>
+<span class="fc" id="L96">                    return result.getSection().getTimeLocations().stream();</span>
                   } else {
-<span class="fc" id="L61">                    return Stream.empty();</span>
+<span class="fc" id="L98">                    return Stream.empty();</span>
                   }
                 })
-<span class="fc" id="L64">            .filter(</span>
+<span class="fc" id="L101">            .filter(</span>
                 loc -&gt;
-<span class="fc bfc" id="L66" title="All 4 branches covered.">                    loc.getBuilding() != null &amp;&amp; loc.getBuilding().equalsIgnoreCase(buildingCode))</span>
-<span class="fc" id="L67">            .map(loc -&gt; loc.getRoom())</span>
-<span class="fc bfc" id="L68" title="All 4 branches covered.">            .filter(room -&gt; room != null &amp;&amp; !room.isEmpty())</span>
-<span class="fc" id="L69">            .collect(Collectors.toCollection(TreeSet::new));</span>
+<span class="fc bfc" id="L103" title="All 4 branches covered.">                    loc.getBuilding() != null &amp;&amp; loc.getBuilding().equalsIgnoreCase(buildingCode))</span>
+<span class="fc" id="L104">            .map(loc -&gt; loc.getRoom())</span>
+<span class="fc bfc" id="L105" title="All 4 branches covered.">            .filter(room -&gt; room != null &amp;&amp; !room.isEmpty())</span>
+<span class="fc" id="L106">            .collect(Collectors.toCollection(TreeSet::new));</span>
 
-<span class="fc" id="L71">    String body = mapper.writeValueAsString(classrooms);</span>
-<span class="fc" id="L72">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L108">    String body = mapper.writeValueAsString(classrooms);</span>
+<span class="fc" id="L109">    return ResponseEntity.ok().body(body);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
