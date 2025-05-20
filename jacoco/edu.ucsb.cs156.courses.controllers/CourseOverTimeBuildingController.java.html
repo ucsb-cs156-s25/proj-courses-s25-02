@@ -7,6 +7,10 @@ import edu.ucsb.cs156.courses.documents.ConvertedSection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,28 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(&quot;/api/public/courseovertime&quot;)
-<span class="fc" id="L19">public class CourseOverTimeBuildingController {</span>
+<span class="fc" id="L23">public class CourseOverTimeBuildingController {</span>
 
-<span class="fc" id="L21">  private ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L25">  private ObjectMapper mapper = new ObjectMapper();</span>
 
   @Autowired ConvertedSectionCollection convertedSectionCollection;
 
+  // old
   @Operation(summary = &quot;Get a list of courses over time, filtered by (abbreviated) building code&quot;)
   @GetMapping(value = &quot;/buildingsearch&quot;, produces = &quot;application/json&quot;)
   public ResponseEntity&lt;String&gt; search(
       @Parameter(
               name = &quot;startQtr&quot;,
               description =
-                  &quot;Starting quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
-              example = &quot;20231&quot;,
+                  &quot;Starting quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
               required = true)
           @RequestParam
           String startQtr,
       @Parameter(
               name = &quot;endQtr&quot;,
               description =
-                  &quot;Ending quarter in yyyyq format, e.g. 20231 for W23, 20232 for S23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
-              example = &quot;20231&quot;,
+                  &quot;Ending quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
               required = true)
           @RequestParam
           String endQtr,
@@ -49,11 +54,59 @@ import org.springframework.web.bind.annotation.RestController;
           @RequestParam
           String buildingCode)
       throws JsonProcessingException {
-<span class="fc" id="L52">    List&lt;ConvertedSection&gt; courseResults =</span>
-<span class="fc" id="L53">        convertedSectionCollection.findByQuarterRangeAndBuildingCode(</span>
+<span class="fc" id="L57">    List&lt;ConvertedSection&gt; courseResults =</span>
+<span class="fc" id="L58">        convertedSectionCollection.findByQuarterRangeAndBuildingCode(</span>
             startQtr, endQtr, buildingCode);
-<span class="fc" id="L55">    String body = mapper.writeValueAsString(courseResults);</span>
-<span class="fc" id="L56">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L60">    String body = mapper.writeValueAsString(courseResults);</span>
+
+<span class="fc" id="L62">    return ResponseEntity.ok().body(body);</span>
+  }
+
+  // new
+  @Operation(
+      summary =
+          &quot;Get a list of classroom numbers within a particular building, given a quarter and building code&quot;)
+  @GetMapping(value = &quot;/buildingsearch/classrooms&quot;, produces = &quot;application/json&quot;)
+  public ResponseEntity&lt;String&gt; searchNew(
+      @Parameter(
+              name = &quot;quarter&quot;,
+              description =
+                  &quot;Quarter in yyyyq format, e.g. 20232 for S23, 20234 for F23, etc. (1=Winter, 2=Spring, 3=Summer, 4=Fall)&quot;,
+              example = &quot;20232&quot;,
+              required = true)
+          @RequestParam
+          String quarter,
+      @Parameter(
+              name = &quot;buildingCode&quot;,
+              description = &quot;Building code such as PHELP for Phelps, GIRV for Girvetz&quot;,
+              example = &quot;GIRV&quot;,
+              required = true)
+          @RequestParam
+          String buildingCode)
+      throws JsonProcessingException {
+<span class="fc" id="L87">    List&lt;ConvertedSection&gt; courseResults =</span>
+<span class="fc" id="L88">        convertedSectionCollection.findByQuarterAndBuildingCode(quarter, buildingCode);</span>
+
+<span class="fc" id="L90">    Set&lt;String&gt; classrooms =</span>
+<span class="fc" id="L91">        courseResults.stream()</span>
+<span class="fc" id="L92">            .flatMap(</span>
+                result -&gt; {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                  if (result.getSection() != null</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                      &amp;&amp; result.getSection().getTimeLocations() != null) {</span>
+<span class="fc" id="L96">                    return result.getSection().getTimeLocations().stream();</span>
+                  } else {
+<span class="fc" id="L98">                    return Stream.empty();</span>
+                  }
+                })
+<span class="fc" id="L101">            .filter(</span>
+                loc -&gt;
+<span class="fc bfc" id="L103" title="All 4 branches covered.">                    loc.getBuilding() != null &amp;&amp; loc.getBuilding().equalsIgnoreCase(buildingCode))</span>
+<span class="fc" id="L104">            .map(loc -&gt; loc.getRoom())</span>
+<span class="fc bfc" id="L105" title="All 4 branches covered.">            .filter(room -&gt; room != null &amp;&amp; !room.isEmpty())</span>
+<span class="fc" id="L106">            .collect(Collectors.toCollection(TreeSet::new));</span>
+
+<span class="fc" id="L108">    String body = mapper.writeValueAsString(classrooms);</span>
+<span class="fc" id="L109">    return ResponseEntity.ok().body(body);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
