@@ -4,6 +4,7 @@ import edu.ucsb.cs156.courses.repositories.UserRepository;
 import edu.ucsb.cs156.courses.services.UCSBCurriculumService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = &quot;UCSBCurriculumController&quot;)
 @RestController
 @RequestMapping(&quot;/api/public&quot;)
-<span class="fc" id="L18">@Slf4j</span>
-<span class="fc" id="L19">public class UCSBCurriculumController extends ApiController {</span>
+<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L20">public class UCSBCurriculumController extends ApiController {</span>
 
   @Autowired UserRepository userRepository;
   @Autowired UCSBCurriculumService ucsbCurriculumService;
@@ -27,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
       @RequestParam String qtr, @RequestParam String dept, @RequestParam String level)
       throws Exception {
 
-<span class="fc" id="L30">    String body = ucsbCurriculumService.getJSON(dept, qtr, level);</span>
+<span class="fc" id="L31">    String body = ucsbCurriculumService.getJSON(dept, qtr, level);</span>
 
-<span class="fc" id="L32">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L33">    return ResponseEntity.ok().body(body);</span>
   }
 
   // Backend for final exam info, similar to the above operation:
@@ -39,9 +40,53 @@ import org.springframework.web.bind.annotation.RestController;
       @RequestParam String quarterYYYYQ, @RequestParam String enrollCd)
       throws Exception { // Looks for quarter and code
 
-<span class="fc" id="L42">    String body = ucsbCurriculumService.getFinalsInfo(quarterYYYYQ, enrollCd);</span>
+<span class="fc" id="L43">    String body = ucsbCurriculumService.getFinalsInfo(quarterYYYYQ, enrollCd);</span>
 
-<span class="fc" id="L44">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L45">    return ResponseEntity.ok().body(body);</span>
   }
+
+  @GetMapping(value = &quot;/generalEducationInfo&quot;, produces = &quot;application/json&quot;)
+  public List&lt;String&gt; getGeneralEducationAreas() {
+<span class="fc" id="L50">    List&lt;String&gt; geAreas =</span>
+<span class="fc" id="L51">        List.of(</span>
+            &quot;A1&quot;, // English Reading and Composition (Part 1)
+            &quot;A2&quot;, // English Reading and Composition (Part 2)
+            &quot;B&quot;, // Foreign Language
+            &quot;C&quot;, // Science, Mathematics, and Technology
+            &quot;D&quot;, // Social Sciences
+            &quot;E&quot;, // Culture and Thought
+            &quot;F&quot;, // Arts
+            &quot;G&quot;, // Literature
+            &quot;H&quot;, // Foreign Language
+            &quot;WRT&quot;, // Writing
+            &quot;QR&quot;, // Quantitative Reasoning
+            &quot;ETH&quot;, // Ethnicity
+            &quot;EUR&quot;, // European Traditions
+            &quot;NWC&quot;, // World Cultures
+            &quot;AMH&quot; // American History and Institutions
+            );
+<span class="fc" id="L68">    return geAreas;</span>
+  }
+
+  /*
+   * Definitions
+   *
+   * Areas of GE:
+   *
+   * Area A - English Reading and Composition
+   * Area B - Foreign Language
+   * Area C - Science, Mathematics, and Technology
+   * Area D - Social Science
+   * Area E - Culture and Thought
+   * Area F - Arts
+   * Area G - Literature
+   *
+   * Writing (A1 &amp; A2)  --&gt;&gt; This is different from Area A
+   * European Traditions
+   * World Cultures
+   * Quantitative Relationships
+   * Ethnicity
+   * American History and Institutions
+   */
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
