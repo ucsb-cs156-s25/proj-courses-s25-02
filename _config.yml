@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-s25/proj-courses-s25-02
 owner: ucsb-cs156-s25
 repo_name: proj-courses-s25-02
-pull_requests: [{"author":{"id":"U_kgDOBdVC1w","is_bot":false,"login":"Elskin","name":"Xinyan Zhao"},"headRefName":"xz-jobendpoint","number":28,"title":"Xz-Paginate the Job Log Endpoint","url":"https://github.com/ucsb-cs156-s25/proj-courses-s25-02/pull/28"}]
+pull_requests: []
